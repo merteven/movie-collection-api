@@ -75,7 +75,7 @@ public class CollectionOperatorService {
     //
     DbUserDetails userDetails = getCurrentUserDetails();
     Collection collection = collectionService.getByIdAndUserId(collectionId, userDetails.id());
-    collectionItemService.add(itemAddDTO.movieId(), itemAddDTO.title(), collection);
+    collectionItemService.add(itemAddDTO.movieId(), externalMovieById.title(), collection);
     return externalMovieById;
   }
 

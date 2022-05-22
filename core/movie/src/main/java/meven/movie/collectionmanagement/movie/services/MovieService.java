@@ -53,7 +53,7 @@ public class MovieService {
                   .map(CompletableFuture::join)
                   .map(HttpEntity::getBody)
                   .filter(Objects::nonNull)
-                  .map(MovieDTO::new)
+                  .map(this::toMovieDTO)
                   .toList();
   }
 
@@ -66,7 +66,7 @@ public class MovieService {
     return Objects.requireNonNull(restTemplate.getForObject(url, SearchResult.class))
                   .results()
                   .stream()
-                  .map(MovieDTO::new)
+                  .map(this::toMovieDTO)
                   .toList();
   }
 
@@ -83,10 +83,18 @@ public class MovieService {
                                         .path("/" + id.toString())
                                         .build()
                                         .toUriString();
-    return new MovieDTO(Objects.requireNonNull(restTemplate.getForObject(url, ExternalMovie.class)));
+    return toMovieDTO(Objects.requireNonNull(restTemplate.getForObject(url, ExternalMovie.class)));
+  }
+
+  private MovieDTO toMovieDTO(ExternalMovie externalMovie) {
+    return new MovieDTO(externalMovie, createMovieImageUrl(externalMovie.posterPath()));
   }
 
   private UriComponentsBuilder getMovieApiUriBuilder() {
     return UriComponentsBuilder.fromHttpUrl(MOVIE_API_URI).queryParam("api_key", apiKey);
+  }
+
+  private String createMovieImageUrl(String path) {
+    return UriComponentsBuilder.fromHttpUrl("https://image.tmdb.org/t/p/w500/").path(path).toUriString();
   }
 }
