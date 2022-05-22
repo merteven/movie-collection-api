@@ -1,11 +1,10 @@
 package meven.movie.collectionmanagement.controllers;
 
-import meven.movie.collectionmanagement.models.JwtDTO;
 import meven.movie.collectionmanagement.models.LoginRequest;
+import meven.movie.collectionmanagement.models.UserJwtDTO;
 import meven.movie.collectionmanagement.services.AuthService;
 import meven.movie.collectionmanagement.user.entities.User;
 import meven.movie.collectionmanagement.user.models.CreateUserRequest;
-import meven.movie.collectionmanagement.user.models.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +27,7 @@ public class AuthControllerTests extends AbstractControllerTest {
   @Test
   public void loginShouldAcceptValidUsernameAndPassword() throws Exception {
     LoginRequest request = new LoginRequest("username", "password");
-    JwtDTO response = new JwtDTO("jwt_token");
+    UserJwtDTO response = new UserJwtDTO(request.username(), User.Role.USER.name(), "jwt_token");
     when(authService.login(request)).thenReturn(response);
 
     this.mockMvc.perform(post("/api/auth/login")
@@ -49,7 +48,7 @@ public class AuthControllerTests extends AbstractControllerTest {
   @Test
   public void registerShouldAcceptValidUsernameAndPassword() throws Exception {
     CreateUserRequest request = new CreateUserRequest("username", "password");
-    UserDTO response = new UserDTO("merteven", User.Role.USER);
+    UserJwtDTO response = new UserJwtDTO("merteven", User.Role.USER.name(), "token");
     when(authService.register(request)).thenReturn(response);
 
     this.mockMvc.perform(post("/api/auth/register")

@@ -1,5 +1,6 @@
 package meven.movie.collectionmanagement.configs;
 
+import java.util.List;
 import meven.movie.collectionmanagement.filters.JwtFilter;
 import meven.movie.collectionmanagement.handlers.JWTUnauthorizedHandler;
 import meven.movie.collectionmanagement.services.JWTService;
@@ -17,6 +18,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * @author meven
@@ -81,5 +85,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers("/v3/api-docs/**").permitAll()
         .anyRequest().authenticated();
     http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+
+    configuration.setAllowedOrigins(List.of("*"));
+    configuration.setAllowedMethods(List.of("*"));
+    configuration.setAllowedHeaders(List.of("*"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+
+    return source;
   }
 }

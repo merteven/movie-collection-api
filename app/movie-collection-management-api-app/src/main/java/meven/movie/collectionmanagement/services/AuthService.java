@@ -1,9 +1,9 @@
 package meven.movie.collectionmanagement.services;
 
-import meven.movie.collectionmanagement.models.JwtDTO;
 import meven.movie.collectionmanagement.models.LoginRequest;
+import meven.movie.collectionmanagement.models.UserJwtDTO;
 import meven.movie.collectionmanagement.user.models.CreateUserRequest;
-import meven.movie.collectionmanagement.user.models.UserDTO;
+import meven.movie.collectionmanagement.user.models.DbUserDetails;
 import meven.movie.collectionmanagement.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,15 +33,17 @@ public class AuthService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public JwtDTO login(LoginRequest loginRequest) {
+  public UserJwtDTO login(LoginRequest loginRequest) {
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
     String jwt = jwtService.generateToken(authentication);
-    return new JwtDTO(jwt);
+    DbUserDetails userDetails = (DbUserDetails) authentication.getPrincipal();
+    return new UserJwtDTO(userDetails.username(), userDetails.role(), jwt);
   }
 
-  public UserDTO register(CreateUserRequest request) {
+  public UserJwtDTO register(CreateUserRequest request) {
     String encodedPassword = passwordEncoder.encode(request.password());
-    return userService.create(new CreateUserRequest(request.username(), encodedPassword));
+    userService.create(new CreateUserRequest(request.username(), encodedPassword));
+    return login(new LoginRequest(request.username(), request.password()));
   }
 }
