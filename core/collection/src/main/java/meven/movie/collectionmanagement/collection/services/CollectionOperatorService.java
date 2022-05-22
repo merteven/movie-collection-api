@@ -11,6 +11,8 @@ import meven.movie.collectionmanagement.movie.services.MovieService;
 import meven.movie.collectionmanagement.user.entities.User;
 import meven.movie.collectionmanagement.user.models.DbUserDetails;
 import meven.movie.collectionmanagement.user.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,13 +50,13 @@ public class CollectionOperatorService {
     return toCollectionDTO(collectionService.getById(id));
   }
 
-  public List<CollectionDTO> getAll(Pageable page) {
-    return collectionService.getAll(page).stream().map(this::toCollectionDTO).toList();
+  public Page<CollectionDTO> getAll(Pageable page) {
+    return collectionService.getAll(page).map(this::toCollectionDTO);
   }
 
-  public List<CollectionDTO> getAllByUser(Pageable page) {
+  public Page<CollectionDTO> getAllByUser(Pageable page) {
     DbUserDetails userDetails = getCurrentUserDetails();
-    return collectionService.getAllByUserId(userDetails.id(), page).stream().map(this::toCollectionDTO).toList();
+    return collectionService.getAllByUserId(userDetails.id(), page).map(this::toCollectionDTO);
   }
 
   public CollectionDTO updateName(Long id, String name) {
@@ -77,13 +79,14 @@ public class CollectionOperatorService {
     return externalMovieById;
   }
 
-  public List<MovieDTO> getItems(Long collectionId, String query, Pageable page) {
+  public Page<MovieDTO> getItems(Long collectionId, String query, Pageable page) {
     // Checking if the collection exists
     collectionService.getById(collectionId);
     //
-    List<CollectionItem> items = collectionItemService.getItems(collectionId, query, page);
+    Page<CollectionItem> items = collectionItemService.getItems(collectionId, query, page);
     List<Integer> movieIds = items.stream().map(CollectionItem::getMovieId).toList();
-    return movieService.getExternalMoviesByIds(movieIds);
+    List<MovieDTO> moviesByIds = movieService.getExternalMoviesByIds(movieIds);
+    return new PageImpl<>(moviesByIds, page, items.getTotalElements());
   }
 
   public void removeItem(Integer externalMovieId, Long collectionId) {

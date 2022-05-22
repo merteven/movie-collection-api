@@ -1,7 +1,6 @@
 package meven.movie.collectionmanagement.collection.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import meven.movie.collectionmanagement.collection.entities.Collection;
 import meven.movie.collectionmanagement.collection.exceptions.CollectionMaxCountExceededException;
@@ -10,6 +9,7 @@ import meven.movie.collectionmanagement.collection.exceptions.CollectionNotFound
 import meven.movie.collectionmanagement.collection.models.CollectionUpsertRequest;
 import meven.movie.collectionmanagement.collection.repositories.CollectionRepository;
 import meven.movie.collectionmanagement.user.entities.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -50,12 +50,12 @@ class CollectionService {
     return collectionRepository.findByIdAndUserId(id, userId).orElseThrow(CollectionNotFoundException::new);
   }
 
-  public List<Collection> getAll(Pageable page) {
-    return collectionRepository.findAll(page).stream().toList();
+  public Page<Collection> getAll(Pageable page) {
+    return collectionRepository.findAll(page);
   }
 
-  public List<Collection> getAllByUserId(Long userId, Pageable page) {
-    return collectionRepository.findAllByUserId(userId, page).stream().toList();
+  public Page<Collection> getAllByUserId(Long userId, Pageable page) {
+    return collectionRepository.findAllByUserId(userId, page);
   }
 
   public Collection update(Collection existingCollection) {

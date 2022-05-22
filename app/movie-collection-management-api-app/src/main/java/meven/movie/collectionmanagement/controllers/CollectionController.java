@@ -8,6 +8,7 @@ import meven.movie.collectionmanagement.collection.models.CollectionItemAddReque
 import meven.movie.collectionmanagement.collection.models.CollectionUpsertRequest;
 import meven.movie.collectionmanagement.collection.services.CollectionOperatorService;
 import meven.movie.collectionmanagement.movie.models.MovieDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,13 +44,13 @@ public class CollectionController {
   }
 
   @GetMapping
-  public List<CollectionDTO> get(@RequestParam(defaultValue = "0") Integer page,
+  public Page<CollectionDTO> get(@RequestParam(defaultValue = "0") Integer page,
                                  @RequestParam(defaultValue = "10") @Max(10) Integer size) {
     return collectionOperatorService.getAll(PageRequest.of(page, size));
   }
 
   @GetMapping(value = "/owned")
-  public List<CollectionDTO> getOwned(@RequestParam(defaultValue = "0") Integer page,
+  public Page<CollectionDTO> getOwned(@RequestParam(defaultValue = "0") Integer page,
                                       @RequestParam(defaultValue = "10") @Max(10) Integer size) {
     return collectionOperatorService.getAllByUser(PageRequest.of(page, size));
   }
@@ -70,7 +71,7 @@ public class CollectionController {
   }
 
   @GetMapping("/{id}/items")
-  public List<MovieDTO> getItems(@PathVariable Long id,
+  public Page<MovieDTO> getItems(@PathVariable Long id,
                                  @RequestParam(required = false) String query,
                                  @RequestParam(defaultValue = "0") Integer page,
                                  @RequestParam(defaultValue = "10") @Max(10) Integer size) {

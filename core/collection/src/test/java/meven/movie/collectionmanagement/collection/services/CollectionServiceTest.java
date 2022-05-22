@@ -1,7 +1,6 @@
 package meven.movie.collectionmanagement.collection.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import meven.movie.collectionmanagement.collection.entities.Collection;
 import meven.movie.collectionmanagement.collection.models.CollectionUpsertRequest;
 import meven.movie.collectionmanagement.collection.repositories.CollectionRepository;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,9 +104,9 @@ public class CollectionServiceTest {
     User user = userRepository.save(new User("meven", "pass", User.Role.USER, LocalDateTime.now()));
     collectionRepository.save(new Collection("name", user, LocalDateTime.now()));
 
-    List<Collection> first = collectionService.getAll(PageRequest.of(0, 10));
+    Page<Collection> first = collectionService.getAll(PageRequest.of(0, 10));
     assertThat(first).hasSize(1);
-    List<Collection> second = collectionService.getAll(PageRequest.of(1, 10));
+    Page<Collection> second = collectionService.getAll(PageRequest.of(1, 10));
     assertThat(second).hasSize(0);
   }
 
@@ -116,9 +116,9 @@ public class CollectionServiceTest {
     User unknown = userRepository.save(new User("unknown", "pass", User.Role.USER, LocalDateTime.now()));
     collectionRepository.save(new Collection("name", user, LocalDateTime.now()));
 
-    List<Collection> byUser = collectionService.getAllByUserId(user.getId(), PageRequest.of(0, 10));
+    Page<Collection> byUser = collectionService.getAllByUserId(user.getId(), PageRequest.of(0, 10));
     assertThat(byUser).hasSize(1);
-    List<Collection> byUnknown = collectionService.getAllByUserId(unknown.getId(), PageRequest.of(1, 10));
+    Page<Collection> byUnknown = collectionService.getAllByUserId(unknown.getId(), PageRequest.of(1, 10));
     assertThat(byUnknown).hasSize(0);
   }
 }

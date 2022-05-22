@@ -8,6 +8,7 @@ import meven.movie.collectionmanagement.collection.exceptions.CollectionItemAlre
 import meven.movie.collectionmanagement.collection.exceptions.CollectionItemMaxCountExceededException;
 import meven.movie.collectionmanagement.collection.exceptions.CollectionItemNotFoundException;
 import meven.movie.collectionmanagement.collection.repositories.CollectionItemRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,12 +46,11 @@ class CollectionItemService {
     return collectionItemRepository.save(new CollectionItem(collection, externalMovieId, title, LocalDateTime.now()));
   }
 
-  public List<CollectionItem> getItems(Long collectionId, String query, Pageable page) {
+  public Page<CollectionItem> getItems(Long collectionId, String query, Pageable page) {
     if (hasText(query)) {
-      return collectionItemRepository.findAllByCollectionIdAndTitleContainingIgnoreCase(collectionId, query, page)
-                                     .toList();
+      return collectionItemRepository.findAllByCollectionIdAndTitleContainingIgnoreCase(collectionId, query, page);
     }
-    return collectionItemRepository.findAllByCollectionId(collectionId, page).toList();
+    return collectionItemRepository.findAllByCollectionId(collectionId, page);
   }
 
   @Transactional
